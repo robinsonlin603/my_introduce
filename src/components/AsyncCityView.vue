@@ -1,33 +1,29 @@
 <template>
-    <div class="flex flex-col flex-1 items-center">
-        <div
-            v-if="route.query.preview"
-            class="text-white p-4 bg-weather-secondary w-full text-center"
-        >
+    <div class="flex flex-col flex-1 items-center bg-weather-secondary text-white">
+        <div v-if="route.query.preview" class="p-4 bg-weather-secondary w-full text-center">
             <p>
-                You are currently previewing this city, click the "+" icon to start tracking this
-                city.
+                {{ $t('weather.plus') }}
             </p>
         </div>
-        <div class="flex flex-col items-center text-white py-12">
+        <div class="flex flex-col items-center py-12">
             <h1 class="text-4xl mb-2">{{ route.params.city }}</h1>
             <p class="text-sm mb-12">
                 {{
-                    new Date(weatherData.currentTime).toLocaleString('en-us', {
+                    new Date(weatherData.currentTime).toLocaleString(language, {
                         weekday: 'short',
                         day: '2-digit',
                         month: 'long'
                     })
                 }}
                 {{
-                    new Date(weatherData.currentTime).toLocaleString('en-us', {
+                    new Date(weatherData.currentTime).toLocaleString(language, {
                         timeStyle: 'short'
                     })
                 }}
             </p>
             <p class="text-8xl mb-8">{{ Math.round(weatherData.current.temp) }}&deg;</p>
             <p>
-                Feels like
+                {{ $t('weather.feels') }}
                 {{ Math.round(weatherData.current.feels_like) }}&deg;
             </p>
             <p class="capitalize">
@@ -39,9 +35,9 @@
                 alt=""
             />
         </div>
-        <hr class="w-full border-white border-opacity-10 border" />
-        <div class="max-w-screen-md w-full py-12 text-white">
-            <h2 class="mb-4">Hourly Weather</h2>
+        <hr class="w-full border-opacity-10 border" />
+        <div class="max-w-screen-md w-full py-12">
+            <h2 class="mb-4">{{ $t('weather.hourly') }}</h2>
             <div class="flex overflow-x-hidden space-x-10">
                 <div
                     v-for="hourData in weatherData.hourly"
@@ -64,13 +60,13 @@
                 </div>
             </div>
         </div>
-        <hr class="border-white border-opacity-10 border w-full" />
-        <div class="max-w-screen-md w-full py-12 text-white">
-            <h2 class="mb-4">7 Day Forecast</h2>
+        <hr class="border-opacity-10 border w-full" />
+        <div class="max-w-screen-md w-full py-12">
+            <h2 class="mb-4">{{ $t('weather.forecast') }}</h2>
             <div v-for="day in weatherData.daily" :key="day.dt" class="flex items-center">
                 <p class="flex-1">
                     {{
-                        new Date(day.dt * 1000).toLocaleDateString('en-us', {
+                        new Date(day.dt * 1000).toLocaleDateString(`${language}`, {
                             weekday: 'long'
                         })
                     }}
@@ -81,19 +77,19 @@
                     alt=""
                 />
                 <div class="flex space-x-2 flex-1 justify-end">
-                    <p>H: {{ Math.round(day.temp.max) }}</p>
-                    <p>L: {{ Math.round(day.temp.min) }}</p>
+                    <p>{{ $t('weather.highest') }} {{ Math.round(day.temp.max) }}</p>
+                    <p>{{ $t('weather.lowest') }} {{ Math.round(day.temp.min) }}</p>
                 </div>
             </div>
         </div>
 
         <div
-            class="flex items-center py-12 space-x-2 text-white cursor-pointer duration-150 hover:text-red-50"
+            class="flex items-center py-12 space-x-2 cursor-pointer duration-150 hover:text-red-50"
             @click="removeCity"
             v-if="route.query.id"
         >
             <i class="fa-solid fa-trash"></i>
-            <p>Remove City</p>
+            <p>{{ $t('weather.remove') }}</p>
         </div>
     </div>
 </template>
@@ -101,6 +97,9 @@
 <script setup>
 import axios from 'axios';
 import { useRoute, useRouter } from 'vue-router';
+import { inject } from 'vue';
+
+const { language } = inject('language');
 
 const route = useRoute();
 const getWeatherData = async () => {

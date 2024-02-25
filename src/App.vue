@@ -1,5 +1,5 @@
 <template>
-    <div class="flex flex-col min-h-screen font-Roboto bg-weather-primary">
+    <div class="flex flex-col min-h-screen font-Roboto bg-gray-primary">
         <SiteNavigation />
         <RouterView v-slot="{ Component }">
             <Transition name="page" mode="out-in">
@@ -12,6 +12,15 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import SiteNavigation from './components/SiteNavigation.vue';
+import { provide, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
+
+const { locale } = useI18n();
+const language = ref(locale.value);
+const updateLocale = (lng) => {
+    language.value = lng;
+};
+provide('language', { language, updateLocale });
 </script>
 
 <style>

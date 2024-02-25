@@ -5,7 +5,9 @@ export default {
         extend: {
             colors: {
                 'weather-primary': '#00668A',
-                'weather-secondary': '#004E71'
+                'weather-secondary': '#004E71',
+                'gray-primary': '#F4F4F4',
+                'black-primary': '#0F0E0E'
             }
         },
         fontFamily: {
@@ -17,8 +19,8 @@ export default {
         },
         screens: {
             sm: '640px',
-            md: '768px'
+            md: '1024px'
         }
     },
     plugins: []
-}
+};

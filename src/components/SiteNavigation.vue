@@ -1,47 +1,79 @@
 <template>
-    <header class="sticky top-0 bg-weather-primary shadow-lg">
-        <nav class="container flex flex-col items-center space-x-4 py-6 text-white sm:flex-row">
+    <header class="sticky top-0 bg-gray-primary shadow-lg">
+        <nav
+            class="container flex flex-col items-center space-x-4 py-6 text-black-primary sm:flex-row"
+        >
             <RouterLink :to="{ name: 'home' }">
-                <div class="flex flex-1 items-center space-x-3">
+                <div
+                    v-if="route.path.split('/')[1] !== 'weather'"
+                    class="flex flex-1 items-center space-x-3"
+                >
+                    <i class="fa-solid fa-house text-2xl"></i>
+                    <p class="text-2xl">Robinson</p>
+                </div>
+                <div v-else class="flex flex-1 items-center space-x-3">
                     <i class="fa-solid fa-sun text-2xl"></i>
-                    <p class="text-2xl">The Local Weather</p>
+                    <p class="text-2xl">{{ $t('nav.theLocalWeather') }}</p>
                 </div>
             </RouterLink>
-            <div class="flex space-x-3 flex-1 justify-end">
+            <div class="flex space-x-3 flex-1 justify-end items-center">
+                <div class="relative">
+                    <button @click="showLanguageMenu = !showLanguageMenu">
+                        {{ language === 'zh-TW' ? `${$t('nav.zh-TW')}` : `${$t('nav.en-US')}` }}
+                    </button>
+                    <div
+                        v-if="showLanguageMenu"
+                        class="w-[100px] h-[50px] absolute top-[30px] left-0"
+                    >
+                        <button v-if="language === 'en-US'" @click="changeLanguage('zh-TW')">
+                            {{ $t('nav.zh-TW') }}
+                        </button>
+                        <button v-if="language === 'zh-TW'" @click="changeLanguage('en-US')">
+                            {{ $t('nav.en-US') }}
+                        </button>
+                    </div>
+                </div>
+                <RouterLink v-if="route.path.split('/')[1] !== 'weather'" :to="{ name: 'about' }">{{
+                    $t('nav.about')
+                }}</RouterLink>
+                <RouterLink :to="{ name: 'weather' }">{{ $t('nav.weather') }}</RouterLink>
+                <RouterLink
+                    v-if="route.path.split('/')[1] !== 'weather'"
+                    :to="{ name: 'portfolio' }"
+                    >{{ $t('nav.portfolio') }}</RouterLink
+                >
                 <i
                     class="fa-solid fa-circle-info text-xl hover:text-weather-secondary duration-150 cursor-pointer"
                     @click="toggleModal"
+                    v-if="route.path.split('/')[1] === 'weather'"
                 ></i>
                 <i
                     class="fa-solid fa-plus text-xl hover:text-weather-secondary duration-150 cursor-pointer"
                     @click="addCity"
-                    v-if="route.query.preview"
+                    v-if="route.query.preview && route.path.split('/')[1] === 'weather'"
                 ></i>
             </div>
             <BaseModal v-model="modalActive">
                 <div class="text-black">
-                    <h1 class="text-2xl mb-1">About:</h1>
+                    <h1 class="text-2xl mb-1">
+                        {{ $t('nav.info.about') }}
+                    </h1>
                     <p class="mb-4">
-                        The Local Weather allows you to track the current and future weather of
-                        cities of your choosing.
+                        {{ $t('nav.info.aboutInfo') }}
                     </p>
-                    <h2 class="text-2xl">How it works:</h2>
+                    <h2 class="text-2xl">{{ $t('nav.info.works') }}</h2>
                     <ol class="list-decimal list-inside mb-4">
-                        <li>Search for your city by entering the name into the search bar.</li>
+                        <li>{{ $t('nav.info.worksInfo1') }}</li>
                         <li>
-                            Select a city within the results, this will take you to the current
-                            weather for your selection.
+                            {{ $t('nav.info.worksInfo2') }}
                         </li>
                         <li>
-                            Track the city by clicking on the "+" icon in the top right. This will
-                            save the city to view at a later time on the home page.
+                            {{ $t('nav.info.worksInfo3') }}
                         </li>
                     </ol>
-                    <h2 class="text-2xl">Removing a city</h2>
+                    <h2 class="text-2xl">{{ $t('nav.info.remove') }}</h2>
                     <p>
-                        If you no longer wish to track a city, simply select the city within the
-                        home page. At the bottom of the page, there will be am option to delete the
-                        city.
+                        {{ $t('nav.info.removeInfo') }}
                     </p>
                 </div>
             </BaseModal>
@@ -51,15 +83,28 @@
 
 <script setup>
 import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
+import { inject, ref } from 'vue';
 import BaseModal from './BaseModal.vue';
-import { ref } from 'vue';
 import { uid } from 'uid';
 
+// i18n
+const { language, updateLocale } = inject('language');
+const { locale } = useI18n();
+const showLanguageMenu = defineModel({ default: false });
+const changeLanguage = (lng) => {
+    updateLocale(lng);
+    locale.value = lng;
+    showLanguageMenu.value = false;
+};
+
+// modal
 const modalActive = ref(null);
 const toggleModal = () => {
     modalActive.value = !modalActive.value;
 };
 
+// city
 const saveCities = ref([]);
 const route = useRoute();
 const router = useRouter();

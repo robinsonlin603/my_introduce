@@ -12,7 +12,7 @@
                             class="text-white mt-8 bg-weather-primary py-2 px-6"
                             @click="toggleModal"
                         >
-                            close
+                            {{ $t('modal.close') }}
                         </button>
                     </div>
                 </Transition>
